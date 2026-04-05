@@ -6,6 +6,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { registerAction } from "../../../action/auth.action";
+import { useRouter } from "next/navigation";
 
 function calculateAge(birthDate) {
   const today = new Date();
@@ -67,6 +68,7 @@ const registerSchema = z.object({
 
 export default function RegisterFormComponent() {
   const [submitError, setSubmitError] = useState("");
+  const router = useRouter();
 
   const {
     register,
@@ -97,6 +99,8 @@ export default function RegisterFormComponent() {
         password: data.password,
         birthDate: data.birthDate,
       });
+      router.push("/login");
+      router.refresh();
     } catch (error) {
       if (
         error.message === "NEXT_REDIRECT" ||

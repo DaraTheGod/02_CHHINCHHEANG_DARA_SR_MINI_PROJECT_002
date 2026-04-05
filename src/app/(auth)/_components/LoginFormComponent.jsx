@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@nextui-org/react";
 import { loginAction } from "../../../action/auth.action";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z
@@ -21,6 +22,7 @@ const loginSchema = z.object({
 
 export default function LoginFormComponent() {
   const [submitError, setSubmitError] = useState("");
+  const router = useRouter();
 
   const {
     register,
@@ -35,6 +37,8 @@ export default function LoginFormComponent() {
     setSubmitError("");
     try {
       await loginAction(data);
+      router.push("/");
+      router.refresh();
     } catch (error) {
       if (
         error.message === "NEXT_REDIRECT" ||

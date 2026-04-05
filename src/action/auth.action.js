@@ -14,13 +14,14 @@ export async function loginAction(data) {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: "/",
+      redirect: false,
     });
   } catch (error) {
     if (isRedirect(error)) throw error;
     console.error("Login Error Details:", error);
     throw new Error("Login failed. Please check your credentials.");
   }
+  // redirect("/");
 }
 
 export async function registerAction(data) {
@@ -38,9 +39,10 @@ export async function registerAction(data) {
     console.error("Registration Error Details:", error);
     throw new Error("Registration failed. Please check your input.");
   }
-  redirect("/login");
+  // redirect("/login");
 }
 
 export async function logOutAction() {
   await signOut({ redirectTo: "/" });
+  router.refresh();
 }

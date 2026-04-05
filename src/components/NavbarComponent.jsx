@@ -3,9 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Button } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
+import {
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Avatar,
+} from "@nextui-org/react";
 import { logOutAction } from "../action/auth.action";
+import { da } from "zod/locales";
+import { data } from "framer-motion/client";
 
 // import { useCart } from "@/store/cartStore";
 
@@ -61,9 +70,15 @@ function authLinkClass(pathname, path, filled = false) {
 export default function NavbarComponent() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
+
+  const userName = session?.user?.fullName;
+
+  // console.log("status:", status);
+  // console.log("session:", session);
+  // console.log("userName:", userName);
+
   //   const { totalQuantity } = useCart();
 
   //   const cartLabel =
@@ -130,15 +145,37 @@ export default function NavbarComponent() {
               </>
             ) : (
               /* Shown only when LOGGED IN */
-              <Button
-                variant="flat"
-                color="danger"
-                size="sm"
-                className="rounded-full font-semibold"
-                onPress={() => logOutAction()}
-              >
-                Log out
-              </Button>
+              <Dropdown placement="bottom-end" offset={10}>
+                <DropdownTrigger>
+                  <div
+                    className={`relative inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border transition ${
+                      pathname === "/profile"
+                        ? "border-gray-400 bg-gray-200 text-gray-900"
+                        : "border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-100"
+                    }`}
+                  >
+                    <Avatar
+                      name={userName?.[0]?.toUpperCase() || "U"}
+                      size="sm"
+                      className="bg-transparent text-md font-medium"
+                    />
+                  </div>
+                </DropdownTrigger>
+
+                <DropdownMenu
+                  aria-label="Profile Actions"
+                  className="p-2 bg-white border border-gray-200 rounded-2xl shadow-sm drop-shadow-md -mt-2"
+                >
+                  <DropdownItem
+                    key="logout"
+                    textValue="Logout"
+                    onPress={() => logOutAction()}
+                    className="bg-white text-gray-700 px-2 py-1 mr-30 rounded-lg transition-all data-[hover=true]:bg-red-200 data-[hover=true]:text-red-700"
+                  >
+                    <span className="text-sm font-medium">Logout</span>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             )}
           </div>
           <Link

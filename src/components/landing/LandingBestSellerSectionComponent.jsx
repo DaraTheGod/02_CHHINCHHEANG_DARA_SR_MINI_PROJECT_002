@@ -1,7 +1,12 @@
+"use client";
+
 import React from "react";
 import ProductCardComponent from "../ProductCardComponent";
+import { useSession } from "next-auth/react";
 
 export default function LandingBestSellerSectionComponent({ items }) {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
   return (
     <section className="mx-auto w-full max-w-7xl py-16 lg:py-20">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -14,10 +19,24 @@ export default function LandingBestSellerSectionComponent({ items }) {
           </p>
         </div>
       </div>
-      <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
-        {items.map((product, index) => (
-          <ProductCardComponent product={product} key={index} />
-        ))}
+      <div
+        className={
+          isAuthenticated
+            ? "mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6"
+            : "mt-12 flex items-center justify-center w-full"
+        }
+      >
+        {isAuthenticated ? (
+          <>
+            {items.map((product, index) => (
+              <ProductCardComponent product={product} key={index} />
+            ))}
+          </>
+        ) : (
+          <p className="text-md text-gray-500 text-center">
+            No best-selling products to show yet.
+          </p>
+        )}
       </div>
     </section>
   );
