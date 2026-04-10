@@ -6,18 +6,17 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { registerAction } from "../../../action/auth.action";
-import { useRouter } from "next/navigation";
 
-function calculateAge(birthDate) {
-  const today = new Date();
-  const birth = new Date(birthDate);
-  const age = today.getFullYear() - birth.getFullYear();
-  const notYetBirthdayThisYear =
-    today.getMonth() < birth.getMonth() ||
-    (today.getMonth() === birth.getMonth() &&
-      today.getDate() < birth.getDate());
-  return notYetBirthdayThisYear ? age - 1 : age;
-}
+// function calculateAge(birthDate) {
+//   const today = new Date();
+//   const birth = new Date(birthDate);
+//   const age = today.getFullYear() - birth.getFullYear();
+//   const notYetBirthdayThisYear =
+//     today.getMonth() < birth.getMonth() ||
+//     (today.getMonth() === birth.getMonth() &&
+//       today.getDate() < birth.getDate());
+//   return notYetBirthdayThisYear ? age - 1 : age;
+// }
 
 const registerSchema = z.object({
   fullName: z
@@ -57,18 +56,15 @@ const registerSchema = z.object({
       (password) => /[^A-Za-z0-9]/.test(password),
       "Password must include at least one special character",
     ),
-  birthDate: z
-    .string()
-    .min(1, "Birthdate is required")
-    .refine((date) => {
-      const age = calculateAge(date);
-      return age >= 18;
-    }, "You must be at least 18 years old to register."),
+  birthDate: z.string().min(1, "Birthdate is required"),
+  // .refine((date) => {
+  //   const age = calculateAge(date);
+  //   return age >= 18;
+  // }, "You must be at least 18 years old to register."),
 });
 
 export default function RegisterFormComponent() {
   const [submitError, setSubmitError] = useState("");
-  const router = useRouter();
 
   const {
     register,
@@ -86,21 +82,21 @@ export default function RegisterFormComponent() {
 
   const onSubmit = async (data) => {
     setSubmitError("");
-
     const nameParts = data.fullName.trim().split(/\s+/);
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(" ");
-
     try {
-      await registerAction({
+      const result = await registerAction({
         firstName,
         lastName,
         email: data.email,
         password: data.password,
         birthDate: data.birthDate,
       });
-      router.push("/login");
-      router.refresh();
+      if (result?.error) {
+        setSubmitError(result.error);
+        return;
+      }
     } catch (error) {
       if (
         error.message === "NEXT_REDIRECT" ||
@@ -108,7 +104,7 @@ export default function RegisterFormComponent() {
       ) {
         return;
       }
-      setSubmitError("Registration failed. Please try again.");
+      setSubmitError("Registration failed. Please check your connection.");
     }
   };
 

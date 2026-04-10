@@ -4,16 +4,66 @@ import { categories, products } from "../../data/mockData";
 import LandingHeroSectionComponent from "../../components/landing/LandingHeroSectionComponent";
 import LandingBestSellerSectionComponent from "../../components/landing/LandingBestSellerSectionComponent";
 import LandingEssentialComponent from "../../components/landing/LandingEssentialComponent";
+import { auth } from "../../auth";
+import { productService } from "../../service/product.service";
+import { categoryService } from "../../service/category.service";
 
-const bestSellers = products.slice(0, 4);
-const heroStrip = products.slice(0, 3);
+// const bestSellers = products.slice(0, 4);
+// const heroStrip = products.slice(0, 3);
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  const token = session?.user?.accessToken;
+  const productInstance = await productService();
+  const categoryInstance = await categoryService();
+
+  let heroStrip = [];
+  let bestSellers = [];
+  let ESSENTIALS_TABS = ["All"];
+  let allProducts = [];
+
+  if (token) {
+    const bestSellingData = await productInstance.getBestSelling(token);
+    const categoryData = await categoryInstance.getCategories(token);
+    const allProductsData = await productInstance.getAllProducts(token);
+
+    const categories = categoryData?.payload || [];
+
+    if (categories.length > 0) {
+      const apiCategories = categories.map(
+        (cat) => cat.categoryName || cat.name,
+      );
+      ESSENTIALS_TABS = ["All", ...apiCategories];
+    }
+
+    allProducts = (allProductsData?.payload || []).map((product) => {
+      const match = categories.find((c) => c.categoryId === product.categoryId);
+      return {
+        ...product,
+        categoryName: match
+          ? match.categoryName || match.name
+          : "Uncategorized",
+      };
+    });
+
+    heroStrip = bestSellingData?.payload?.slice(0, 3) || [];
+    bestSellers = bestSellingData?.payload?.slice(0, 4) || [];
+  }
   return (
     <div className="bg-[#fafafa]">
-      <LandingHeroSectionComponent miniProducts={heroStrip} />
-      <LandingBestSellerSectionComponent items={bestSellers} />
-      <LandingEssentialComponent />
+      <LandingHeroSectionComponent
+        miniProducts={heroStrip}
+        isAuth={!!session}
+      />
+      <LandingBestSellerSectionComponent
+        items={bestSellers}
+        isAuth={!!session}
+      />
+      <LandingEssentialComponent
+        ESSENTIALS_TABS={ESSENTIALS_TABS}
+        isAuth={!!session}
+        allProducts={allProducts}
+      />
 
       <section className="mx-auto w-full max-w-7xl py-16 lg:py-20">
         <div className="grid gap-4 md:grid-cols-3">
@@ -114,7 +164,7 @@ export default function Home() {
             href="/categories"
             className="font-medium text-gray-900 underline-offset-2 hover:underline"
           >
-            {categories.length} categories
+            {ESSENTIALS_TABS.length} categories
           </Link>{" "}
           and{" "}
           <Link

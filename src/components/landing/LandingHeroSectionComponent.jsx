@@ -2,11 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 
-export default function LandingHeroSectionComponent({ miniProducts }) {
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated";
+export default function LandingHeroSectionComponent({ miniProducts, isAuth }) {
+  const isAuthenticated = isAuth;
+  const isValidUrl = (url) => {
+    try {
+      return url && (url.startsWith("http://") || url.startsWith("https://"));
+    } catch {
+      return false;
+    }
+  };
   return (
     <section className="relative overflow-hidden bg-white">
       <div className="mx-auto grid w-full max-w-7xl gap-10 py-14 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
@@ -46,27 +51,29 @@ export default function LandingHeroSectionComponent({ miniProducts }) {
             </p>
             <div className="mt-3 flex gap-2">
               {isAuthenticated ? (
-                miniProducts.map((p) => (
-                  <Link
-                    key={p.productId}
-                    href={`/products/${p.productId}`}
-                    className="relative size-14 overflow-hidden rounded-lg bg-gray-100 ring-1 ring-gray-100"
-                  >
-                    {p.imageUrl ? (
-                      <Image
-                        src={p.imageUrl}
-                        alt=""
-                        fill
-                        sizes="56px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="flex size-full items-center justify-center text-xs text-gray-400">
-                        ◇
-                      </span>
-                    )}
-                  </Link>
-                ))
+                <>
+                  {miniProducts?.map((p) => (
+                    <Link
+                      key={p.productId}
+                      href={`/products/${p.productId}`}
+                      className="relative size-14 overflow-hidden rounded-lg bg-gray-100 ring-1 ring-gray-100"
+                    >
+                      {isValidUrl(p.imageUrl) ? (
+                        <Image
+                          src={p.imageUrl}
+                          alt={p.name}
+                          fill
+                          sizes="56px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="flex size-full items-center justify-center text-xs text-gray-400">
+                          ◇
+                        </span>
+                      )}
+                    </Link>
+                  ))}
+                </>
               ) : (
                 <p className="text-xs text-gray-400 py-2">
                   Login to see our best sellers here!

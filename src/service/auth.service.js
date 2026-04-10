@@ -13,12 +13,12 @@ export async function loginService(data) {
     body: JSON.stringify(user),
   });
 
-  const loggedUser = await res.json();
+  const result = await res.json();
   if (!res.ok) {
-    throw new Error(loggedUser.message || "Login failed");
+    throw new Error(result.detail || "Login failed");
   }
-  console.log("This is logged user in service: ", loggedUser);
-  return loggedUser;
+  console.log("This is logged user in service: ", result);
+  return result;
 }
 
 export async function registerService(data) {
@@ -41,10 +41,14 @@ export async function registerService(data) {
       body: JSON.stringify(user),
     },
   );
-  const registeredUser = await res.json();
+  const result = await res.json();
   if (!res.ok) {
-    throw new Error(registeredUser.message || "Registration failed");
+    if (result.errors) {
+      const firstError = Object.values(result.errors)[0];
+      throw new Error(firstError);
+    }
+    throw new Error(result.detail || "Registration failed");
   }
-  console.log("This is registered user in service: ", registeredUser);
-  return registeredUser;
+  console.log("This is registered user in service: ", result);
+  return result;
 }

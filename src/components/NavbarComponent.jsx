@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import {
   Button,
   Dropdown,
@@ -67,13 +66,12 @@ function authLinkClass(pathname, path, filled = false) {
     : "rounded-full px-4 py-2 text-sm font-medium text-gray-600 transition hover:text-gray-900 hover:ring-1 hover:ring-gray-200";
 }
 
-export default function NavbarComponent() {
+export default function NavbarComponent({ session: initialSession }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated";
 
-  const userName = session?.user?.fullName;
+  const isAuthenticated = !!initialSession;
+  const userName = initialSession?.user?.fullName;
 
   // console.log("status:", status);
   // console.log("session:", session);
@@ -129,7 +127,6 @@ export default function NavbarComponent() {
           <div className="hidden items-center gap-2 sm:flex">
             {!isAuthenticated ? (
               <>
-                {/* Shown only when NOT logged in */}
                 <Link
                   href="/login"
                   className={authLinkClass(pathname, "/login", false)}
@@ -144,7 +141,6 @@ export default function NavbarComponent() {
                 </Link>
               </>
             ) : (
-              /* Shown only when LOGGED IN */
               <Dropdown placement="bottom-end" offset={10}>
                 <DropdownTrigger>
                   <div

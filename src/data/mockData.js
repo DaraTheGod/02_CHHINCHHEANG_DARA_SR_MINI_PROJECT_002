@@ -164,12 +164,24 @@ export const products = productsResponse.data;
 export const orders = ordersResponse.data;
 
 /** Landing “skincare essentials” filters — lowercase tag on each product, or omit for “All” only */
-export const ESSENTIALS_TABS = ["All", "Moisturizer", "Serum", "Cleanser", "Toner"];
+export const ESSENTIALS_TABS = [
+  "All",
+  "Moisturizer",
+  "Serum",
+  "Cleanser",
+  "Toner",
+];
 
 export function filterProductsByEssentialsTab(list, tab) {
+  if (!list) return [];
   if (tab === "All") return list;
-  const key = tab.toLowerCase();
-  return list.filter((p) => p.essentialsTag === key);
+
+  const selectedTab = tab.toLowerCase();
+
+  return list.filter((p) => {
+    const productCategory = p.categoryName?.toLowerCase();
+    return productCategory === selectedTab;
+  });
 }
 
 export function getCategoryLabel(categoryId) {

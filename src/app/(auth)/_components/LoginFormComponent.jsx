@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@nextui-org/react";
 import { loginAction } from "../../../action/auth.action";
-import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z
@@ -14,15 +13,12 @@ const loginSchema = z.object({
     .min(1, "Email is required")
     .email("Please enter a valid email address"),
 
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters"),
+  password: z.string().min(1, "Password is required"),
+  // .min(8, "Password must be at least 8 characters"),
 });
 
 export default function LoginFormComponent() {
   const [submitError, setSubmitError] = useState("");
-  const router = useRouter();
 
   const {
     register,
@@ -36,9 +32,11 @@ export default function LoginFormComponent() {
   const onSubmit = async (data) => {
     setSubmitError("");
     try {
-      await loginAction(data);
-      router.push("/");
-      router.refresh();
+      const result = await loginAction(data);
+      if (result?.error) {
+        setSubmitError(result.error);
+        return;
+      }
     } catch (error) {
       if (
         error.message === "NEXT_REDIRECT" ||
@@ -46,7 +44,7 @@ export default function LoginFormComponent() {
       ) {
         return;
       }
-      setSubmitError("Invalid email or password. Please try again.");
+      setSubmitError("A connection error occurred. Please try again.");
     }
   };
 

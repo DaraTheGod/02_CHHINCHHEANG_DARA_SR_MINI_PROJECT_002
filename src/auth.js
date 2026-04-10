@@ -40,7 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         } catch (error) {
           console.error("Internal Auth Error: ", error);
-          return null;
+          throw new Error(error.message || "Invalid credentials");
         }
       },
     }),

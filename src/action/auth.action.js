@@ -3,6 +3,7 @@
 import { registerService } from "../service/auth.service";
 import { signIn, signOut } from "../auth";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 // import { isRedirectError } from "next/navigation";
 
 const isRedirect = (error) =>
@@ -11,17 +12,29 @@ const isRedirect = (error) =>
 export async function loginAction(data) {
   const { email, password } = data;
   try {
-    await signIn("credentials", {
-      email,
-      password,
+    const result = await signIn("credentials", {
+      email: email,
+      password: password,
       redirect: false,
     });
+    if (result?.error) {
+      return { error: "Invalid email or password" };
+    }
   } catch (error) {
     if (isRedirect(error)) throw error;
-    console.error("Login Error Details:", error);
-    throw new Error("Login failed. Please check your credentials.");
+    console.error("Login Action Caught Error:", error);
+    const specificMessage = error.cause?.err?.message;
+    if (specificMessage) {
+      return { error: specificMessage };
+    }
+    if (error.type === "CallbackRouteError") {
+      return { error: "Invalid email or password" };
+    }
+    return { error: error.message || "An unexpected error occurred" };
   }
-  // redirect("/");
+  revalidatePath("/");
+  redirect("/");
+  // redirect("/?auth=success");
 }
 
 export async function registerAction(data) {
@@ -36,13 +49,14 @@ export async function registerAction(data) {
     });
   } catch (error) {
     if (isRedirect(error)) throw error;
-    console.error("Registration Error Details:", error);
-    throw new Error("Registration failed. Please check your input.");
+    console.error("Register Action Caught Error:", error);
+    return { error: error.message || "Registration failed" };
   }
-  // redirect("/login");
+  revalidatePath("/login");
+  redirect("/login");
 }
 
 export async function logOutAction() {
   await signOut({ redirectTo: "/" });
-  router.refresh();
+  revalidatePath("/");
 }

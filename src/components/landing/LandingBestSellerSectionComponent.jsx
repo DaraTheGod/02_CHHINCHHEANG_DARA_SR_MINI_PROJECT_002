@@ -2,11 +2,10 @@
 
 import React from "react";
 import ProductCardComponent from "../ProductCardComponent";
-import { useSession } from "next-auth/react";
 
-export default function LandingBestSellerSectionComponent({ items }) {
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated";
+export default function LandingBestSellerSectionComponent({ items, isAuth }) {
+  const isAuthenticated = isAuth;
+  const hasItems = items && items.length > 0;
   return (
     <section className="mx-auto w-full max-w-7xl py-16 lg:py-20">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -19,23 +18,25 @@ export default function LandingBestSellerSectionComponent({ items }) {
           </p>
         </div>
       </div>
-      <div
-        className={
-          isAuthenticated
-            ? "mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6"
-            : "mt-12 flex items-center justify-center w-full"
-        }
-      >
-        {isAuthenticated ? (
-          <>
+      <div className="mt-12">
+        {!isAuthenticated ? (
+          <div className="flex flex-col items-center justify-center w-full gap-6 mt-4 px-4">
+            <p className="text-sm text-gray-500 text-center px-6 mt-1 max-w-md">
+              Sign in to unlock our current best-selling skincare favorites.
+            </p>
+          </div>
+        ) : !hasItems ? (
+          <div className="flex items-center justify-center w-full py-12">
+            <p className="text-md text-gray-500 text-center">
+              No best-selling products to show yet.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
             {items.map((product, index) => (
               <ProductCardComponent product={product} key={index} />
             ))}
-          </>
-        ) : (
-          <p className="text-md text-gray-500 text-center">
-            No best-selling products to show yet.
-          </p>
+          </div>
         )}
       </div>
     </section>
