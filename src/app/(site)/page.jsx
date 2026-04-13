@@ -14,8 +14,8 @@ import { categoryService } from "../../service/category.service";
 export default async function Home() {
   const session = await auth();
   const token = session?.user?.accessToken;
-  const productInstance = await productService();
-  const categoryInstance = await categoryService();
+  const productInstance = productService();
+  const categoryInstance = categoryService();
 
   let heroStrip = [];
   let bestSellers = [];
