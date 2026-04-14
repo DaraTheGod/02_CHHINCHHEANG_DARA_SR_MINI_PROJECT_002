@@ -113,6 +113,9 @@ export default function ShopFilterSidebar({
           </label>
         ))}
       </div>
+      <p className="-mt-2 text-xs text-gray-400">
+        Select none to include all categories.
+      </p>
     </aside>
   );
 }

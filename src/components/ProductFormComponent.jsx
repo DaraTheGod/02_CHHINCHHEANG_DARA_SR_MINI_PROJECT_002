@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { productAction } from "../action/product.action";
+import { toastSuccessTopEnd } from "../lib/toast";
 
 const AVAILABLE_COLORS = ["green", "gray", "red", "blue", "white"];
 const AVAILABLE_SIZES = ["s", "m", "l", "xl", "xxl", "xxxl"];
@@ -104,6 +105,11 @@ export default function ProductFormComponent({
       setError(result.error);
       return;
     }
+
+    toastSuccessTopEnd(
+      isEdit ? "Product Updated" : "Product Created",
+      `Product has been ${isEdit ? "updated" : "created"} successfully.`,
+    );
 
     router.refresh();
     onClose();

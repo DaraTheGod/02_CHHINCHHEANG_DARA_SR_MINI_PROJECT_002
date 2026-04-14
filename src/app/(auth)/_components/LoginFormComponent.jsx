@@ -95,7 +95,7 @@ export default function LoginFormComponent() {
         </label>
         <input
           id="login-password"
-          type="text"
+          type="password"
           autoComplete="current-password"
           placeholder="••••••••"
           {...register("password")}

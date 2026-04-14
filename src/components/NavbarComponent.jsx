@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import {
   Button,
   Dropdown,
@@ -14,8 +13,8 @@ import {
 import { logOutAction } from "../action/auth.action";
 import { da } from "zod/locales";
 import { data } from "framer-motion/client";
-
-// import { useCart } from "@/store/cartStore";
+import { useCartStore } from "../store/useCartStore";
+import { useEffect, useState } from "react";
 
 const centerLinks = [
   { href: "/", label: "Home" },
@@ -67,11 +66,19 @@ function authLinkClass(pathname, path, filled = false) {
 }
 
 export default function NavbarComponent({ session: initialSession }) {
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   const isAuthenticated = !!initialSession;
   const userName = initialSession?.user?.fullName;
+
+  const cart = useCartStore((state) => state.cart);
+  const totalQuantity = useCartStore((state) => state.getTotalQuantity());
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // console.log("status:", status);
   // console.log("session:", session);
@@ -185,14 +192,11 @@ export default function NavbarComponent({ session: initialSession }) {
             }`}
           >
             <CartBagIcon className="size-5" />
-            {/* <span
-              className={`absolute -right-0.5 -top-0.5 flex min-h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-900 px-1 text-[10px] font-semibold leading-none text-lime-300 tabular-nums transition-opacity ${
-                totalQuantity > 0 ? "opacity-100" : "pointer-events-none opacity-0"
-              }`}
-              aria-hidden
-            >
-              {totalQuantity > 99 ? "99+" : totalQuantity}
-            </span> */}
+            {mounted && totalQuantity > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-teal-900 text-[10px] font-bold text-lime-300 shadow-sm">
+                {totalQuantity > 99 ? "99+" : totalQuantity}
+              </span>
+            )}
           </Link>
 
           <Button

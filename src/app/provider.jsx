@@ -3,17 +3,12 @@
 import { NextUIProvider } from "@nextui-org/react";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
-import { Suspense } from "react";
-import ToastListener from "../components/ToastListener";
 
 export default function Provider({ children }) {
   return (
     <NextUIProvider>
       <SessionProvider refetchOnWindowFocus={false}>
-        <Toaster position="top-center" />
-        <Suspense fallback={null}>
-          <ToastListener />
-        </Suspense>
+        <Toaster richColors position="top-center" />
         {children}
       </SessionProvider>
     </NextUIProvider>

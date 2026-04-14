@@ -7,7 +7,7 @@ import LandingEssentialComponent from "../../components/landing/LandingEssential
 import { auth } from "../../auth";
 import { productService } from "../../service/product.service";
 import { categoryService } from "../../service/category.service";
-
+import AuthToastListener from "../../components/AuthToastListener";
 // const bestSellers = products.slice(0, 4);
 // const heroStrip = products.slice(0, 3);
 
@@ -51,6 +51,7 @@ export default async function Home() {
   }
   return (
     <div className="bg-[#fafafa]">
+      <AuthToastListener />
       <LandingHeroSectionComponent
         miniProducts={heroStrip}
         isAuth={!!session}

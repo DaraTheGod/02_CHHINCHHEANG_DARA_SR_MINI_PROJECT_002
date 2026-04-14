@@ -33,7 +33,7 @@ export async function loginAction(data) {
     return { error: error.message || "An unexpected error occurred" };
   }
   revalidatePath("/");
-  redirect("/");
+  redirect("/?auth=success");
   // redirect("/?auth=success");
 }
 

@@ -9,20 +9,13 @@ import {
   DropdownItem,
   Avatar,
 } from "@nextui-org/react";
-import { deleteProductAction } from "../../../action/product.action";
 import { StarRow } from "../../../components/ProductCardComponent";
 import { Trash2, SquarePen } from "lucide-react";
 import Link from "next/link";
 import ButtonAddComponent from "../../../components/ButtonAddComponent";
 
-export default function ManageProductCard({ product, onEdit }) {
+export default function ManageProductCard({ product, onEdit, onDelete }) {
   if (!product) return null;
-
-  const handleDelete = async () => {
-    if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      await deleteProductAction(product.productId);
-    }
-  };
 
   const isValidUrl = (url) => {
     try {
@@ -61,7 +54,7 @@ export default function ManageProductCard({ product, onEdit }) {
             <DropdownItem
               key="delete"
               textValue="Delete"
-              onPress={handleDelete}
+              onPress={() => onDelete(product)}
               className="text-gray-700 px-2 py-1 rounded-lg transition-all data-[hover=true]:bg-red-200 data-[hover=true]:text-red-700"
             >
               <div className="flex items-center gap-2">
@@ -97,7 +90,7 @@ export default function ManageProductCard({ product, onEdit }) {
             ${product.price?.toFixed(2)}
           </span>
           <div className="absolute bottom-4 right-4">
-            <ButtonAddComponent productId={product.productId} />
+            <ButtonAddComponent product={product} />
           </div>
         </div>
       </div>

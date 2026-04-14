@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { productService } from "../../../../service/product.service";
+import { useCartStore } from "../../../../store/useCartStore";
+import { toastSuccessTop, toastSuccessTopEnd } from "../../../../lib/toast";
+import { Button } from "@nextui-org/react";
 
 const COLOR_THEME = {
   green: {
@@ -89,6 +92,10 @@ function StarRating({ star, productId, token, onRated }) {
 }
 
 export default function ProductDetailClient({ product }) {
+  const addToCart = useCartStore((state) => state.addToCart);
+  const handleAddToCart = () => {
+    addToCart(product, quantity, selectedColor, selectedSize);
+  };
   const { data: session } = useSession();
   const token = session?.user?.accessToken;
 
@@ -124,6 +131,12 @@ export default function ProductDetailClient({ product }) {
         <span>/</span>
         <span className="font-medium text-gray-900">{product.name}</span>
       </nav>
+
+      <Button onPress={() => toastSuccessTop("Saved!")}>Show Top Toast</Button>
+
+      <Button onPress={() => toastSuccessTopEnd("Saved!")}>
+        Show Top-End Toast
+      </Button>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
         <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm flex items-center justify-center">
@@ -208,7 +221,7 @@ export default function ProductDetailClient({ product }) {
                       onClick={() => setSelectedSize(size)}
                       className={`flex h-10 p-4 items-center justify-center rounded-full border-2 text-xs font-bold uppercase transition-all duration-300 ${
                         isActiveSize
-                          ? theme.sizeActive // Dynamic classes from your theme!
+                          ? theme.sizeActive
                           : "border-gray-200 bg-gray-50 text-gray-400 hover:border-gray-300"
                       }`}
                     >
@@ -249,9 +262,18 @@ export default function ProductDetailClient({ product }) {
                 +
               </button>
             </div>
-            <button className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[#1e293b] font-semibold text-white shadow-lg transition hover:bg-slate-700">
+            <Button
+              onClick={handleAddToCart}
+              onPress={() =>
+                toastSuccessTopEnd(
+                  "Added to Cart",
+                  `${product.name} has been added to your cart.`,
+                )
+              }
+              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[#1e293b] font-semibold text-white shadow-lg transition hover:bg-slate-700"
+            >
               <span className="text-lg">🛍️</span> Add to cart
-            </button>
+            </Button>
           </div>
 
           <div className="mt-2 flex items-start gap-4 rounded-2xl border border-gray-200 p-5 bg-white">
