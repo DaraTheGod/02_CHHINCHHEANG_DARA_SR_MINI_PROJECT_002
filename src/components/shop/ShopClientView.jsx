@@ -34,7 +34,7 @@ export default function ShopClientView({ initialProducts, categories }) {
   }, [filters, initialProducts]);
 
   return (
-    <main className=" mx-auto w-full max-w-7xl items-center justify-between gap-4 lg:py-4 m-14">
+    <main className="mx-auto w-full max-w-7xl items-center justify-between gap-4 lg:py-4 m-14">
       <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">

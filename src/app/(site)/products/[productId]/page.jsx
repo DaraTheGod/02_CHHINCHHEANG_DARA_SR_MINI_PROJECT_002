@@ -12,9 +12,5 @@ export default async function ProductDetailPage({ params }) {
 
   const product = response?.payload;
 
-  // if (!product) {
-  //   return <div className="py-20 text-center">Product not found</div>;
-  // }
-
   return <ProductDetailClient product={product} />;
 }

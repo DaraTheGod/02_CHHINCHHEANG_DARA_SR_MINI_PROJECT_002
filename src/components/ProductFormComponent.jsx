@@ -7,8 +7,6 @@ import { productAction } from "../action/product.action";
 const AVAILABLE_COLORS = ["green", "gray", "red", "blue", "white"];
 const AVAILABLE_SIZES = ["s", "m", "l", "xl", "xxl", "xxxl"];
 
-// Swap these out for real categories from your API if needed
-// Pass `categories` as a prop from ManageProductClient if you fetch them server-side
 const FALLBACK_CATEGORIES = [{ categoryId: "", name: "Select..." }];
 
 export default function ProductFormComponent({
@@ -21,7 +19,6 @@ export default function ProductFormComponent({
   const router = useRouter();
   const isEdit = mode === "edit";
 
-  // ✅ Key fix: derive initial state directly — no stale useEffect
   const [name, setName] = useState(isEdit ? (initialData?.name ?? "") : "");
   const [price, setPrice] = useState(isEdit ? (initialData?.price ?? "") : "");
   const [imageUrl, setImageUrl] = useState(
@@ -42,7 +39,6 @@ export default function ProductFormComponent({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Re-sync if initialData reference changes (e.g. user opens edit for a different product)
   useEffect(() => {
     if (isEdit && initialData) {
       setName(initialData.name ?? "");
@@ -61,7 +57,7 @@ export default function ProductFormComponent({
       setSelectedColors([]);
       setSelectedSizes([]);
     }
-  }, [initialData?.productId, isEdit]); // ✅ keyed on productId, not whole object
+  }, [initialData?.productId, isEdit]);
 
   const toggleColor = (color) =>
     setSelectedColors((prev) =>
@@ -78,7 +74,6 @@ export default function ProductFormComponent({
     setError("");
     setLoading(true);
 
-    // ✅ Exact shape the backend expects for both POST and PUT
     const data = {
       name,
       description,
@@ -126,7 +121,6 @@ export default function ProductFormComponent({
         </p>
       )}
 
-      {/* Name + Price */}
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-gray-700">Name</label>
@@ -153,7 +147,6 @@ export default function ProductFormComponent({
         </div>
       </div>
 
-      {/* Category + Image URL */}
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-gray-700">
@@ -167,7 +160,7 @@ export default function ProductFormComponent({
             <option value="">Select...</option>
             {categories.map((cat) => (
               <option key={cat.categoryId} value={cat.categoryId}>
-                {cat.name}
+                {cat.categoryName || cat.name || "Unnamed Category"}
               </option>
             ))}
           </select>
@@ -186,7 +179,6 @@ export default function ProductFormComponent({
         </div>
       </div>
 
-      {/* Colors */}
       <div className="flex flex-col gap-2">
         <label className="text-sm font-semibold text-gray-700">Colors</label>
         <div className="flex flex-wrap gap-2">
@@ -227,7 +219,6 @@ export default function ProductFormComponent({
         </div>
       </div>
 
-      {/* Sizes */}
       <div className="flex flex-col gap-2">
         <label className="text-sm font-semibold text-gray-700">Sizes</label>
         <div className="flex flex-wrap gap-2">
@@ -268,7 +259,6 @@ export default function ProductFormComponent({
         </div>
       </div>
 
-      {/* Description */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-semibold text-gray-700">
           Description
@@ -282,7 +272,6 @@ export default function ProductFormComponent({
         />
       </div>
 
-      {/* Actions */}
       <div className="mt-2 flex justify-end gap-3 border-t border-gray-100 pt-5">
         <button
           type="button"

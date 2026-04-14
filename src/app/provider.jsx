@@ -8,14 +8,14 @@ import ToastListener from "../components/ToastListener";
 
 export default function Provider({ children }) {
   return (
-    <SessionProvider refetchOnWindowFocus={false}>
-      <Toaster position="top-center" />
-
-      <Suspense fallback={null}>
-        <ToastListener />
-      </Suspense>
-
-      <NextUIProvider>{children}</NextUIProvider>
-    </SessionProvider>
+    <NextUIProvider>
+      <SessionProvider refetchOnWindowFocus={false}>
+        <Toaster position="top-center" />
+        <Suspense fallback={null}>
+          <ToastListener />
+        </Suspense>
+        {children}
+      </SessionProvider>
+    </NextUIProvider>
   );
 }

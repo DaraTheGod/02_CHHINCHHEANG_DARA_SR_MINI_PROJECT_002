@@ -10,28 +10,34 @@ const COLOR_THEME = {
   green: {
     selected: "bg-green-100 text-green-700 border-green-500",
     dot: "bg-green-500",
+    sizeActive: "border-green-500 bg-green-50 text-green-700 shadow-sm",
   },
   gray: {
     selected: "bg-gray-100 text-gray-700 border-gray-500",
     dot: "bg-gray-500",
+    sizeActive: "border-gray-500 bg-gray-50 text-gray-700 shadow-sm",
   },
   red: {
     selected: "bg-red-100 text-red-700 border-red-500",
     dot: "bg-red-500",
+    sizeActive: "border-red-500 bg-red-50 text-red-700 shadow-sm",
   },
   blue: {
     selected: "bg-blue-100 text-blue-700 border-blue-500",
     dot: "bg-blue-500",
+    sizeActive: "border-blue-500 bg-blue-50 text-blue-700 shadow-sm",
   },
   white: {
     selected: "bg-slate-50 text-slate-700 border-slate-300",
     dot: "bg-slate-300",
+    sizeActive: "border-slate-300 bg-slate-50 text-slate-700 shadow-sm",
   },
 };
 
 const DEFAULT_THEME = {
-  selected: "bg-slate-100 text-slate-700 border-slate-400",
+  selected: "bg-slate-50 text-slate-700 border-slate-300",
   dot: "bg-slate-400",
+  sizeActive: "border-slate-300 bg-slate-50 text-slate-700 shadow-sm",
 };
 
 function getTheme(color) {
@@ -127,7 +133,7 @@ export default function ProductDetailClient({ product }) {
               alt=""
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-contain p-8"
+              className="object-cover transition-transform duration-500 hover:scale-105"
               priority
             />
           ) : (
@@ -138,11 +144,11 @@ export default function ProductDetailClient({ product }) {
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-6">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
               {product.name}
             </h1>
-            <div className="pt-1 shrink-0">
+            <div>
               <StarRating
                 star={star}
                 productId={product.productId}
@@ -175,7 +181,7 @@ export default function ProductDetailClient({ product }) {
                       className={`rounded-full px-5 py-2 text-sm font-medium capitalize border-2 transition-all ${
                         isActive
                           ? colorTheme.selected
-                          : "bg-white text-gray-400 border-gray-100 hover:border-gray-200"
+                          : "bg-white text-gray-400 border-gray-200 hover:border-gray-200"
                       }`}
                     >
                       {color}
@@ -184,10 +190,7 @@ export default function ProductDetailClient({ product }) {
                 })}
               </div>
               <p className="text-xs text-gray-400">
-                Selected:{" "}
-                <span className="text-green-600 font-medium">
-                  {selectedColor}
-                </span>
+                Selected: <span>{selectedColor}</span>
               </p>
             </div>
           )}
@@ -196,26 +199,30 @@ export default function ProductDetailClient({ product }) {
             <div className="space-y-3">
               <p className="text-sm font-bold text-gray-900">Choose a size</p>
               <div className="flex flex-wrap gap-3">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`flex h-10 w-14 items-center justify-center rounded-full border-2 text-xs font-bold uppercase transition ${
-                      selectedSize === size
-                        ? "border-gray-800 bg-white text-gray-800 shadow-sm"
-                        : "border-gray-100 bg-gray-50 text-gray-400"
-                    }`}
-                  >
-                    <span className="flex items-center gap-1.5">
-                      {selectedSize === size && (
-                        <span
-                          className={`h-1.5 w-1.5 rounded-full ${theme.dot}`}
-                        />
-                      )}
-                      {size}
-                    </span>
-                  </button>
-                ))}
+                {product.sizes.map((size) => {
+                  const isActiveSize = selectedSize === size;
+
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`flex h-10 p-4 items-center justify-center rounded-full border-2 text-xs font-bold uppercase transition-all duration-300 ${
+                        isActiveSize
+                          ? theme.sizeActive // Dynamic classes from your theme!
+                          : "border-gray-200 bg-gray-50 text-gray-400 hover:border-gray-300"
+                      }`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {isActiveSize && (
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full ${theme.dot} animate-pulse`}
+                          />
+                        )}
+                        {size}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -247,8 +254,8 @@ export default function ProductDetailClient({ product }) {
             </button>
           </div>
 
-          <div className="mt-2 flex items-start gap-4 rounded-2xl border border-gray-100 p-5 bg-white">
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+          <div className="mt-2 flex items-start gap-4 rounded-2xl border border-gray-200 p-5 bg-white">
+            <div className="mt-1">
               <svg
                 width="20"
                 height="20"
